@@ -23,16 +23,30 @@ app.set('view engine', 'ejs')
 
 //==================Routes===================
 
-app.get('/', getHello);
+app.get('/', getHome);
 
-function getHello (req, res) {
+function getHome (req, res) {
     res.render('pages/index');
 }
 
-// app.get('/', (req, res) =>{
+app.post('/searches', (req, res) => {
+  console.log("im searching for", req.body);
+
+  superagent.get(`https://www.googleapis.com/books/v1/volumes?q=in${searchArr[0].searchBy}:${searchArr[0].name}& limit=10`)
+  .then(bookData => {
+
+    console.log("bookData", bookData);
+    
+    const bookCameBack = data.body.items.map(outputPrep);
+
+    function outputPrep(info){
+      return new Bookbuild(info)
+    }
+
+  });
 
 
-// });
+})
 
 //==================Init====================
 
