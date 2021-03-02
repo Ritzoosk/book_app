@@ -1,0 +1,8 @@
+DROP TABLE IF EXISTS cities;
+
+CREATE TABLE cities (
+  id SERIAL PRIMARY KEY,
+  book VARCHAR(255),
+  author VARCHAR(255),
+
+)

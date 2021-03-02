@@ -23,16 +23,19 @@ app.set('view engine', 'ejs')
 
 //==================Routes===================
 
-app.get('/', getHome);
+app.get('/searches', (req, res) => {
+  res.render('./pages/searches/new.ejs')
 
-function getHome (req, res) {
-    res.render('pages/index');
-}
+});
+
+// function getHome (req, res) {
+//     res.render('pages/index');
+// }
 
 app.post('/searches', (req, res) => {
   console.log("im searching for", req.body);
 
-  superagent.get(`https://www.googleapis.com/books/v1/volumes?q=in${searchArr[0].searchBy}:${searchArr[0].name}& limit=10`)
+  superagent.get(`https://www.googleapis.com/books/v1/volumes?q=in${req.body.selection}:${req.body.userInput}& limit=10`)
   .then(bookData => {
 
     console.log("bookData", bookData);

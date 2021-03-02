@@ -8,16 +8,18 @@
 </head>
 <body>
   <header>
+    <h1>Book Search</h1>
   </header>
 
-  <form action="/searches" method="POST"></form>
-  <fieldset>
-    <legend>Title/Author</legend>
-    <input type="text" name = "query-type" placeholder= "Title or Author">
-    
-  </fieldset>
-  
-  
-  
+  <form action="/searches" method="POST">
+    <fieldset>
+      <legend>Search for a Book</legend>
+      <li><input type="text" name = "userInput" placeholder= "Title or Author">
+      </li>
+      <li id="title"><input type="radio"  value="title" name = "selection" >Title</li>>
+      <li id="author"><input type="radio"  value="author" name = "selection" >Author</li>>
+      <li id="submit"><input type="submit"  value="submit" ></li>>
+    </fieldset>
+  </form>
 </body>
 </html>
