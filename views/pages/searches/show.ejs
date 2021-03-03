@@ -13,15 +13,15 @@
 
   <main>
     <ul>
-      <% for (let i = 0: i < arr.length: i ++) { %>
+      <% for (let i = 0; i < bookFront.length; i ++) { %>
         <li>
-          <img src="<%=arr[i}.image_url" alt="">
-          <h2><%=arr[i].title%></h2>
-          <h3><%=arr[i].author%></h3>
-          <p><%=arr[i].description%></p>
+          <img src="<%=bookFront[i].image_url%>" alt="">
+          <h2><%=bookFront[i].title%></h2>
+          <h3><%=bookFront[i].author%></h3>
+          <p><%=bookFront[i].description%></p>
         </li>
 
-      }
+        <%}%>
     </ul>
   </main>
 </body>
