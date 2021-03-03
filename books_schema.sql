@@ -1,8 +1,9 @@
-DROP TABLE IF EXISTS cities;
+DROP TABLE IF EXISTS books;
 
-CREATE TABLE cities (
+CREATE TABLE books (
   id SERIAL PRIMARY KEY,
-  book VARCHAR(255),
+  img VARCHAR(255),
+  title VARCHAR(255),
   author VARCHAR(255),
-
+  book_description VARCHAR(255)
 )
