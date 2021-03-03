@@ -27,9 +27,11 @@ client.on('error', err => console.log(err));
 //==================Routes===================
 app.get('/', (req, res) => {
   res.render('./pages/index.ejs')
-
 });
 
+app.get('/', showCollection);
+app.get('./searches/new/:book_id', singleBook);
+app.post('./new_search', newSearch);
 
 
 
@@ -37,6 +39,32 @@ app.get('/searches', (req, res) => {
   res.render('./pages/searches/new.ejs')
 
 });
+
+function showCollection(req, res){
+  const sqlStr = "SELECT * FROM books";
+  client.query(sqlStr)
+  .then(results => {
+    //console.log(results);
+    res.render('./pages/index.ejs', {object})
+  })
+console.log('show collection');
+res.render('./pages/searches/new.ejs')
+}
+
+
+function singleBook(req, res){
+  console.log('single book');
+  res.render('./pages/searches/new.ejs')
+}
+
+function newSearch(req, res){
+  console.log('single book');
+  res.render('./pages/searches/new.ejs')
+}
+
+
+
+
 
 app.post('/searches', (req, res) => {
   //console.log("im searching for", req.body);
