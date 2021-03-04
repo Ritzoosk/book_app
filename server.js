@@ -16,7 +16,7 @@ app.use(cors());
 
 const PORT = process.env.PORT || 3000;
 
-app.use(express.static('./public')); 
+app.use(express.static('/public')); 
 app.use(express.urlencoded({extended: true}));
 app.set('view engine', 'ejs')
 
@@ -25,66 +25,69 @@ const client = new pg.Client(DATABASE_URL)
 client.on('error', err => console.log(err));
 
 //==================Routes===================
-app.get('/', (req, res) => {
-  res.render('./pages/index.ejs')
-});
 
-app.get('/', showCollection);
-app.get('./searches/new/:book_id', singleBook);
-app.post('./new_search', newSearch);
+app.get('/', getHomePage);
+app.get('/searches/new/:book_id', singleBook);
+app.get('/searches', getSearchPage);
+app.post('/searches', newSearch);
 
 
 
-app.get('/searches', (req, res) => {
-  res.render('./pages/searches/new.ejs')
+////////////HOME
 
-});
-
-function showCollection(req, res){
+function getHomePage(req, res){
   const sqlStr = "SELECT * FROM books";
   client.query(sqlStr)
   .then(results => {
-    //console.log(results);
-    res.render('./pages/index.ejs', {object})
+    console.log(results);
+    res.render('pages/index.ejs', {collection : results.rows, rowCount : results.rowCount});
   })
-console.log('show collection');
-res.render('./pages/searches/new.ejs')
+}
+
+///////////SEARCH
+
+function getSearchPage(req, res){
+  //console.log('newSearch');
+  res.render('pages/searches/new.ejs')
 }
 
 
 function singleBook(req, res){
-  console.log('single book');
-  res.render('./pages/searches/new.ejs')
+  const sqlStr = "SELECT * FROM books WHERE id=$1";
+  const sqlValue = [req.params.id]
+  client.query(sqlStr, sqlValue)
+  .then(results =>{
+    res.render('pages/books/details.ejs', {book : results.rows[0]});
+  });
+  
 }
 
 function newSearch(req, res){
-  console.log('single book');
-  res.render('./pages/searches/new.ejs')
-}
-
-
-
-
-
-app.post('/searches', (req, res) => {
-  //console.log("im searching for", req.body);
+  //console.log('newSearch', req.body.selection);
   try{
-  superagent.get(`https://www.googleapis.com/books/v1/volumes?q=in${req.body.selection}:${req.body.userInput}& limit=10`)
-  .then(bookData => {
-
-    console.log("bookData", bookData.body);
-    
-    const bookCameBack = bookData.body.items.map(outputPrep);
-
-    function outputPrep(info){
-      return new Bookbuild(info)
-    }
-    res.render('pages/searches/show', {bookFront : bookCameBack})
-  });
-  } catch(error){
-    res.render('/pages/error.ejs', {errorThatComesBack : error})
+    superagent.get(`https://www.googleapis.com/books/v1/volumes?q=in${req.body.selection}:${req.body.userInput}& limit=10`)
+    .then(bookData => {
+  
+      //console.log("bookData", bookData.body);
+      
+      const bookCameBack = bookData.body.items.map(outputPrep);
+      function outputPrep(info){
+        return new Bookbuild(info)
+      }
+      res.render('pages/searches/show', {bookFront : bookCameBack})
+    });
+    } catch(error){
+      res.render('pages/error.ejs', {errorThatComesBack : error})
+  }
+  
 }
-})
+
+function deleteBook(req, res){
+  const selectedBook = req.params.task_id;
+  let sqlString = 'DELET FROM task WHERE id=$1;';
+  let sqlArray = [task_id];
+  return client.query(sqlString, sqlArray)
+}
 
 
 function Bookbuild(data) {
@@ -94,15 +97,13 @@ function Bookbuild(data) {
   this.description = data.volumeInfo.description;
 }
 
-// .catch(errorThatComesBack => {
-//   // console.log(errorThatComesBack);
-// });
 
 //==================Init====================
 
 
+client.connect().then(() => {
 
-  app.listen(PORT, () => console.log(`app is up ${PORT}`));
-
+  app.listen(PORT, () => console.log(`up on http://localhost:${PORT}`));
+});
 
 

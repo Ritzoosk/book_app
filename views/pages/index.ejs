@@ -9,9 +9,18 @@
 <body>
 
   <p>Book Search</p>
-
+  <p>Book Count :<%= rowCount%></p>
   <a href="/pages/searches/new">Here</a>
-  
+  <ul>
+    <% collection.forEach(book => { %>
+      <li>
+        <h3><%=book.title %></h3>
+        <p><%=book.author %></p>
+        <p><%=book.description %></p>
+        <img src="<%= book.image_url %>" >
+    </li>
+    <% }) %>
+  </ul>
   
   
 </body>
