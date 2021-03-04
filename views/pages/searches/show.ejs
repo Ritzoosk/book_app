@@ -19,6 +19,14 @@
           <h2><%=bookFront[i].title%></h2>
           <h3><%=bookFront[i].author%></h3>
           <p><%=bookFront[i].description%></p>
+          <form action="/books" method="post">
+          <input hidden type="text" value= <%=bookFront[i].title %> >
+          <input hidden type="text" value= <%=bookFront[i].author %> >
+          <input hidden type="text" value= <%=bookFront[i].description %> >
+          <input hidden type="text" value= <%=bookFront[i].image_url %> >
+
+          <button type = "submit">save</button> 
+          </form>
         </li>
 
         <%}%>
