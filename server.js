@@ -11,11 +11,11 @@ require('dotenv').config();
 
 const app = express();
 app.use(cors());
-
+const methodOverride = require('method-override');
 
 
 const PORT = process.env.PORT || 3000;
-
+app.use(methodOverride('_method'));
 app.use(express.static('/public')); 
 app.use(express.urlencoded({extended: true}));
 app.set('view engine', 'ejs')
@@ -27,19 +27,23 @@ client.on('error', err => console.log(err));
 //==================Routes===================
 
 app.get('/', getHomePage);
-app.get('/searches/new/:book_id', singleBook);
-app.get('/searches', getSearchPage);
+app.get('/books/:id', singleBook)
 app.post('/searches', newSearch);
+app.get('/searches', getSearchPage);
+app.post('/books', svBook);
+
+
+app.delete('/books/:id');
 
 
 
-////////////HOME
+//=====================HOME=================
 
 function getHomePage(req, res){
   const sqlStr = "SELECT * FROM books";
   client.query(sqlStr)
   .then(results => {
-    console.log(results);
+    // console.log(results);
     res.render('pages/index.ejs', {collection : results.rows, rowCount : results.rowCount});
   })
 }
@@ -48,6 +52,8 @@ function getHomePage(req, res){
 
 function getSearchPage(req, res){
   //console.log('newSearch');
+
+
   res.render('pages/searches/new.ejs')
 }
 
@@ -63,7 +69,7 @@ function singleBook(req, res){
 }
 
 function newSearch(req, res){
-  //console.log('newSearch', req.body.selection);
+  console.log('newSearch', req.body);
   try{
     superagent.get(`https://www.googleapis.com/books/v1/volumes?q=in${req.body.selection}:${req.body.userInput}& limit=10`)
     .then(bookData => {
@@ -82,12 +88,49 @@ function newSearch(req, res){
   
 }
 
+//////////////SAVE
+
+function svBook(req, res){
+const sqlQueryStr = 'INSERT INTO books (title, description, author, image_url) VALUES ($1, $2, $3, $4) RETURNING id';
+const sqlArr = [req.body.title, req.body.description, req.body.author,  req.body.image_url]
+client.query(sqlQueryStr, sqlArr)
+  .then(results => {
+    res.redirect(`/books/${results.rows[0].id}`)
+  });
+
+
+
+};
+
+
+/////////////DELETE
+
 function deleteBook(req, res){
-  const selectedBook = req.params.task_id;
+  const selectedBook = req.params.id;
   let sqlString = 'DELET FROM task WHERE id=$1;';
-  let sqlArray = [task_id];
+  let sqlArray = [id];
+  client.query(sqlString, sqlArray)
   return client.query(sqlString, sqlArray)
+  .then(() => {
+    res.redirect('/');
+
+  });
 }
+
+//////////UPDATE
+
+function updateBooks(req, res){
+  const {title, author, isbn, image_url, description} = req.body;
+  const{id} = req.params;
+  let sqlArray = [id, title, description, author, isbn, image_url];
+  let sqlString = 'UPDATE books SET title=$2, description=$3, author=$4, image_url=$6 WHERE id=$1;';
+  client.query(sqlString, sqlArray)
+  .then(() => {
+    res.send(`/books/${id}`);
+  });
+}
+
+
 
 
 function Bookbuild(data) {
