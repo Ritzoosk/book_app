@@ -7,13 +7,34 @@
   <title>Document</title>
 </head>
 <body>
+  <header>
+    <nav>
+      <ul>
+        <li><a href="/searches/new">Search</a></li>
+        <li><a href="/">Book List</a></li>
+      </ul>
+    </nav>
+  </header>
   <h1>Details</h1>
   <h3><%=book.title %></h3>
   <p><%=book.author %></p>
   <p><%=book.description %></p>
   <img src="<%= book.image_url %>" >
-  <a href="searches/new"> <button>New Search</button></a>
+  <a href="/searches/new"> <button>New Search</button></a>
+<form action="/book/<%=book.id%>?_method=delete" method="POST">
+  <input type="submit" value="delete">
 
+  <form action="/book/<%=book.id%>?_method=PUT" method="POST">
+    <fieldset>
+      <legend>Update Book</legend>
+      <input type="text" name="title" value= <%=book.title %> >
+      <input type="text" name="author" value= <%=book.author %> >
+      <input type="text" name="description" value= <%=book.description %> >
+      <input type="text" name="image_url" value= <%=book.image_url %> >
+    </fieldset>
+
+
+</form>
 
 
 </body>
